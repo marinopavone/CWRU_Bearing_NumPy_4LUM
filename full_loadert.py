@@ -5,7 +5,7 @@ from custom_function.plot_functions import *
 from custom_function.preprocessing_functions import *
 # Define the path to your ORIGINAL_Data folder
 data_dir = "ORIGINAL_Data"
-# bellaaaaaaaaaaaaaaaaaaaaaaaaa
+# bellaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 # Define filtering criteria
 desired_rpm = [1730, 1750, 1772, 1797]
 desired_faults = ["B", "OR@3","OR@6","OR@12", "IR", "Normal"]
