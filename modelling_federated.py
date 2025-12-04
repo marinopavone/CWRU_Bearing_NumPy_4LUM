@@ -22,9 +22,6 @@ y_test = data["y_test"]
 print("Reload completed.")
 
 config_file = "config_file/nn_config_federetedL.json"
-
 nn_model = Generate_NN_model(x_train_compressed, config_file)
-
 history = train_model(nn_model, x_train_compressed, y_train, config_file)
-
 test_results = test_model(nn_model, x_test_compressed, y_test)

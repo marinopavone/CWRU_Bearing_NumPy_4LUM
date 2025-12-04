@@ -30,16 +30,11 @@ for rpm_folder in os.listdir(data_dir):
     rpm_path = os.path.join(data_dir, rpm_folder)
     if os.path.isdir(rpm_path):
         print(rpm_path)
-        if "1797" in rpm_folder:
-            print("calma")
-            print("calmaq")
         for file_name in os.listdir(rpm_path):
             if file_name.endswith(".npz"):
                 match = pattern.match(file_name)
                 if match:
-
                     file_info = match.groupdict()
-
                     pathpath = os.path.join(rpm_path, file_name)
                     peppe = np.load(os.path.join(rpm_path, file_name))
                     # Convert numeric fields to int if they exist
@@ -60,24 +55,10 @@ df = pd.DataFrame(files_data)
 # Reorder columns for clarity
 df = df[['RPM', 'Fault', 'Severity', 'Experiment' , 'Raw', 'Name']]
 print(df)
-# Show result
-# selected = df[
-#     (df["RPM"].isin([1750,1730])) &
-#     (df["Fault"].isin(["IR"])) &
-#     (df["Severity"].isin([7,14,21]))
-# ]
 
 classification_target = ["B",  "IR", "Normal"]
-# plot_signals(selected, title="plot bellissimo" )
-# training_df = df[  (df["Experiment"].isin(["DE12"])) &
-#                    (df["Severity"].isin([7,21,0]))&
-#                    # (df["Fault"].isin(["B", "OR@6", "IR", "Normal"]))]
-#                    (df["Fault"].isin(classification_target))]
-#
-# test_df = df[      (df["Experiment"].isin(["DE12"])) &
-#                    (df["Severity"].isin([14]))&
-#                    # (df["Fault"].isin(["B", "OR@6", "IR", "Normal"]))]
-#                    (df["Fault"].isin(classification_target))]
+
+
 target_df = df[
     (df["Experiment"].isin(["DE12"])) &
     (df["Severity"].isin([0,7,14,21])) &
