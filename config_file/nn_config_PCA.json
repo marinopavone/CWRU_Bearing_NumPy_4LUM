@@ -1,5 +1,5 @@
 {
-    "layers": [40, 3],
+    "layers": [ 3],
 
     "activations": ["relu", "softmax"],
 
@@ -10,7 +10,7 @@
     "dropout": 0,
     "batch_norm": true,
 
-    "epochs": 110,
+    "epochs": 210,
     "batch_size": 200,
 
     "loss": "categorical_crossentropy",

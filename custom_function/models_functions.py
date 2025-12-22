@@ -18,8 +18,8 @@ def Generate_NN_model(X_train, config_file):
     set_global_seed(42)
 
     cfg = load_config(config_file)
-
-    layers_sizes = cfg["layers"]
+    input_dim = X_train.shape[1]
+    layers_sizes = np.insert(cfg["layers"], 0, input_dim)
     activations = cfg["activations"]
 
     if len(layers_sizes) != len(activations):

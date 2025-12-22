@@ -48,7 +48,26 @@ def split_and_fft(signal, w, fs=12000):
 
     return np.vstack(fft_list)
 
-import numpy as np
+
+import pywt
+def split_and_wavelet(signal, w, Fs=12000):
+    """
+    Split in segments of length w and apply custom FFT to each.
+    Returns a matrix (M × w/2) where M = n // w.
+    """
+    n = len(signal)
+    M = n // w
+    trimmed = signal[:M * w]
+    segments = trimmed.reshape(M, w)
+
+    max_level = 3
+    wavelet_list = []
+
+    for seg in segments:
+        coeffs = pywt.wavedec(seg, 'db4', level=max_level)
+        wavelet_list.append(  np.concatenate(coeffs) )
+
+    return wavelet_list
 
 def average_over_window(arr, aw):
     rows, cols = arr.shape
@@ -62,29 +81,70 @@ def average_over_window(arr, aw):
 import pandas as pd
 import numpy as np
 
-def rand_train_test_split(df, test_size=0.2, random_state=42):
+import numpy as np
+import pandas as pd
+
+def stratified_train_test_split(
+    df,
+    label_col="Fault",
+    test_size=0.2,
+    random_state=42
+):
     """
-    Randomly split a dataframe into train and test subsets.
+    Stratified random split preserving class proportions.
 
     Parameters:
         df (DataFrame): Input dataframe
-        test_size (float): Fraction of rows to assign to test set (0 to 1)
+        label_col (str): Column containing class labels
+        test_size (float): Fraction of samples per class in test set
         random_state (int): Seed for reproducibility
 
     Returns:
         train_df, test_df
     """
-    np.random.seed(random_state)
+    rng = np.random.default_rng(random_state)
 
-    # Shuffle the index
-    shuffled_idx = np.random.permutation(df.index)
+    train_parts = []
+    test_parts = []
 
-    # Compute split point
-    test_count = int(len(df) * test_size)
+    for label, group in df.groupby(label_col):
+        n_samples = len(group)
+        n_test = int(np.round(n_samples * test_size))
 
-    # Split
-    test_idx = shuffled_idx[:test_count]
-    train_idx = shuffled_idx[test_count:]
+        # Shuffle indices within the class
+        indices = rng.permutation(group.index)
 
-    # Return dataframes
-    return df.loc[train_idx].reset_index(drop=True), df.loc[test_idx].reset_index(drop=True)
+        test_idx = indices[:n_test]
+        train_idx = indices[n_test:]
+
+        test_parts.append(df.loc[test_idx])
+        train_parts.append(df.loc[train_idx])
+
+    train_df = (
+        pd.concat(train_parts)
+        .sample(frac=1, random_state=random_state)
+        .reset_index(drop=True)
+    )
+
+    test_df = (
+        pd.concat(test_parts)
+        .sample(frac=1, random_state=random_state)
+        .reset_index(drop=True)
+    )
+
+    return train_df, test_df
+
+
+def buil_x_y(df):
+    x_spectrums = []
+    x_rpm = []
+    y_lab = []
+    for index, elem in df.iterrows():
+        c_RPM = elem["RPM"]
+        for segment in elem["Freq_data"]:
+            x_spectrums.append(segment)
+            x_rpm.append(np.array([c_RPM]))
+            y_lab.append(elem["Classification_label"])
+    x_spectrums = np.array(x_spectrums)
+    x_spectrums_compressed = average_over_window(x_spectrums, aw=3)
+    return x_rpm, x_spectrums, y_lab
